@@ -1,9 +1,10 @@
-# Pro-Environment
+# Pro-Environment 2019
+# To protect our databases, we have to hide our server information.
 import pymysql, time
 
 # 创建一个连接对象，再使用创建游标
-con = pymysql.connect(host='45.119.209.222', port=3306, user='RaspPI', passwd='RaspPI',
-                      db='Pro_Environment')
+con = pymysql.connect(host='***.***.***.***', port=****, user='******', passwd='***************',
+                      db='**************')
 cursor = con.cursor()
 print("["+time.strftime("%H:%M:%S", time.localtime())+" INFO] "+"已连接至MySQL数据库！")
 
