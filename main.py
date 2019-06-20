@@ -1,33 +1,80 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 # Pro-Environment 2019
-# To protect our databases, we have to hide our server information.
-import pymysql, time
+import pymysql
+import configparser
+import time
 
+
+def print_info(info):
+    print("[" + time.strftime("%H:%M:%S", time.localtime()) + " INFO] " + info)
+
+
+print_info("Pro Environment Group © 2019")
+
+# 读取配置文件
+print("")
+print_info("The followings is the information of settings.conf:")
+# 生成config对象
+conf = configparser.ConfigParser()
+# 用config对象读取配置文件
+conf.read("settings.conf")
+# 以列表形式返回所有的section
+sections = conf.sections()
+print('Sections:', sections)
+# 得到指定section的所有option
+options = conf.options("MySQL")
+print('Options:', options)
+# 得到指定section的所有键值对
+kvs = conf.items("MySQL")
+print("Key-Value Pair List:", kvs)
+print_info("End of information.")
+print("")
+
+print_info("********** Value List **********")
+# 指定section，option读取值
+conf_host = conf.get("MySQL", "host")
+print_info("Value of MySQL-host = "+conf_host)
+conf_port = conf.getint("MySQL", "port")
+conf_portstr = conf.get("MySQL", "port")
+print_info("Value of MySQL-port = "+conf_portstr+"  \033[7m(Require type: int)\033[0m")
+conf_user = conf.get("MySQL", "user")
+print_info("Value of MySQL-user = "+conf_user)
+conf_passwd = conf.get("MySQL", "passwd")
+print_info("Value of MySQL-passwd = "+conf_passwd)
+conf_db = conf.get("MySQL", "db")
+print_info("Value of MySQL-db = "+conf_db)
+conf_table = conf.get("MySQL", "table")
+print_info("Value of MySQL-table = "+conf_table)
+print_info("************* END *************")
+
+# 查询远程MySQL数据库
 # 创建一个连接对象，再使用创建游标
-con = pymysql.connect(host='***.***.***.***', port=****, user='******', passwd='***************',
-                      db='**************')
+con = pymysql.connect(host=conf_host, port=conf_port, user=conf_user, passwd=conf_passwd,
+                      db=conf_table)
 cursor = con.cursor()
-print("["+time.strftime("%H:%M:%S", time.localtime())+" INFO] "+"已连接至MySQL数据库！")
+print_info("MySQL has been connected.")
 
-code = input("输入键值code --> ")
+barcode = input("输入键值code --> ")
 # 执行一个SQL语句
-sql = "SELECT name,type FROM test WHERE code='" + code + "';"
+sql = "SELECT name,type FROM test WHERE code='" + barcode + "';"
 cursor.execute(sql)
 
 # 从游标中取出所有记录放到一个序列中并关闭游标
 result = cursor.fetchall()
 # print("初步返回值为  "+result)
 
-for d in result :
+for dbreturn in result :
     # 注意int类型需要使用str函数转义
     print("["+time.strftime("%H:%M:%S", time.localtime())+" INFO] "+"获取到的Type代号为  "+d[1])
-    if d[1] == "T":
-        ResultType = "测试"
-    elif d[1] == "A":
+    if dbreturn[1] == "T":
+        ResultType = "\033[7mTEST/033[0m"
+    elif dbreturn[1] == "A":
         ResultType = "塑料"
-    elif d[1] == "B":
+    elif dbreturn[1] == "B":
         ResultType = "纸"
-    elif d[1] == "C":
+    elif dbreturn[1] == "C":
         ResultType = "金属"
-    print("["+time.strftime("%H:%M:%S", time.localtime())+" INFO] "+"Code= "+code+' ; Name= '+d[0]+" ; Type= "+ResultType)
+    print_info("Bar Code = "+barcode+"; Name = "+dbreturn[0]+"; Type")
 cursor.close()
 con.close()
