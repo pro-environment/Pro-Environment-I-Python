@@ -95,6 +95,7 @@ print("\033[0m")
 # 执行一个SQL语句
 sql = "SELECT name,type FROM test WHERE code='" + barcode + "';"
 cursor.execute(sql)
+print_info("Querying...")
 
 # 从游标中取出所有记录放到一个序列中并关闭游标
 result = cursor.fetchall()
@@ -106,16 +107,16 @@ for dbreturn in result:
     print("")
     if dbreturn[1] == "T":
         ResultType = "TEST"
-        arduino = 0
+        send2arduino = 0
     elif dbreturn[1] == "A":
         ResultType = "Plastic"
-        arduino = 1
+        send2arduino = 1
     elif dbreturn[1] == "B":
         ResultType = "Papery"
-        arduino = 2
+        send2arduino = 2
     elif dbreturn[1] == "C":
         ResultType = "Metallic"
-        arduino = 3
+        send2arduino = 3
     print_info("Bar Code = \033[7m"+barcode+"\033[0m; Name = \033[7m"+dbreturn[0]+"\033[0m; Type = \033[7m"+ResultType)
 cursor.close()
 con.close()
