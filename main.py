@@ -100,7 +100,7 @@ cursor.execute(sql)
 result = cursor.fetchall()
 # print("初步返回值为  "+result)
 
-for dbreturn in result :
+for dbreturn in result:
     # 注意int类型需要使用str函数转义
     print_info("Original Type = \033[7m"+dbreturn[1])
     print("")
