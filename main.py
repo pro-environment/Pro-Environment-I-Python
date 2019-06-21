@@ -8,8 +8,8 @@ import serial
 
 
 def print_info(info):
-    print("[" + time.strftime("%H:%M:%S", time.localtime()) + " INFO] " + info)
-    print("\033[0m")
+    print("[" + time.strftime("%H:%M:%S", time.localtime()) + " INFO] " + info+"\033[0m")
+
 
 print_info("Pro Environment Group © 2019")
 
@@ -78,16 +78,17 @@ conf_baudRatestr = conf.get("Arduino", "baudRate")
 print_info("Value of Arduino-baudRate = "+conf_baudRatestr+"  \033[7m(Require type: int)\033[0m")
 print_info("************* END *************")
 
-ser = serial.Serial(conf_COM, conf_baudRate, timeout=0.5)
+# ser = serial.Serial(conf_COM, conf_baudRate, timeout=0.5)
 print_info("Arduino Serial Settings:")
-print_info("COM = \033[7m"+conf_COM+"\033[0m; BaudRate = \033[7m"+conf_baudRate+"; Timeout = \033[7m0.5\033[0m")
+print_info("COM = \033[7m"+conf_COM+"\033[0m; BaudRate = \033[7m"+conf_baudRatestr+
+           "\033[0m; Timeout = \033[7m0.5\033[0m")
 
 # 查询远程MySQL数据库
 # 创建一个连接对象，再使用创建游标
 con = pymysql.connect(host=conf_host, port=conf_port, user=conf_user, passwd=conf_passwd,
-                      db=conf_table)
+                      db=conf_db)
 cursor = con.cursor()
-print_info("MySQL has been connected.")
+print_info("MySQL Server has been connected.")
 
 barcode = input("Type EAN-13 Code > \033[7m ")
 print("\033[0m")
@@ -102,14 +103,19 @@ result = cursor.fetchall()
 for dbreturn in result :
     # 注意int类型需要使用str函数转义
     print_info("Original Type = \033[7m"+dbreturn[1])
+    print("")
     if dbreturn[1] == "T":
         ResultType = "TEST"
+        arduino = 0
     elif dbreturn[1] == "A":
         ResultType = "Plastic"
+        arduino = 1
     elif dbreturn[1] == "B":
         ResultType = "Papery"
+        arduino = 2
     elif dbreturn[1] == "C":
         ResultType = "Metallic"
+        arduino = 3
     print_info("Bar Code = \033[7m"+barcode+"\033[0m; Name = \033[7m"+dbreturn[0]+"\033[0m; Type = \033[7m"+ResultType)
 cursor.close()
 con.close()
