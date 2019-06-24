@@ -12,6 +12,7 @@ def print_info(info):
 
 
 print_info("Pro Environment Group © 2019")
+whilecontinue = 0
 
 # 读取配置文件
 print("")
@@ -89,34 +90,38 @@ con = pymysql.connect(host=conf_host, port=conf_port, user=conf_user, passwd=con
                       db=conf_db)
 cursor = con.cursor()
 print_info("MySQL Server has been connected.")
+while whilecontinue < 1:
+    barcode = input("Type EAN-13 Code > \033[7m ")
+    print("\033[0m")
+    # 执行一个SQL语句
+    sql = "SELECT name,capa,type FROM test WHERE code='" + barcode + "';"
+    cursor.execute(sql)
+    print_info("Querying...")
 
-barcode = input("Type EAN-13 Code > \033[7m ")
-print("\033[0m")
-# 执行一个SQL语句
-sql = "SELECT name,type FROM test WHERE code='" + barcode + "';"
-cursor.execute(sql)
-print_info("Querying...")
+    # 从游标中取出所有记录放到一个序列中并关闭游标
+    result = cursor.fetchall()
+    # print("初步返回值为  "+result)
 
-# 从游标中取出所有记录放到一个序列中并关闭游标
-result = cursor.fetchall()
-# print("初步返回值为  "+result)
-
-for dbreturn in result:
-    # 注意int类型需要使用str函数转义
-    print_info("Original Type = \033[7m"+dbreturn[1])
-    print("")
-    if dbreturn[1] == "T":
-        ResultType = "TEST"
-        send2arduino = 0
-    elif dbreturn[1] == "A":
-        ResultType = "Plastic"
-        send2arduino = 1
-    elif dbreturn[1] == "B":
-        ResultType = "Papery"
-        send2arduino = 2
-    elif dbreturn[1] == "C":
-        ResultType = "Metallic"
-        send2arduino = 3
-    print_info("Bar Code = \033[7m"+barcode+"\033[0m; Name = \033[7m"+dbreturn[0]+"\033[0m; Type = \033[7m"+ResultType)
+    for dbreturn in result:
+        # 注意int类型需要使用str函数转义
+        print_info("Original Type = \033[7m"+dbreturn[1])
+        print("")
+        if dbreturn[2] == "T":
+            ResultType = "TEST"
+            send2arduino = 0
+        elif dbreturn[2] == "A":
+            ResultType = "Plastic"
+            send2arduino = 1
+        elif dbreturn[2] == "B":
+            ResultType = "Papery"
+            send2arduino = 2
+        elif dbreturn[2] == "C":
+            ResultType = "Metallic"
+            send2arduino = 3
+        elif dbreturn[0] == "":
+            print_info("\033[7mError: Data not found.")
+        print_info("Bar Code = \033[7m"+barcode+"\033[0m; Name = \033[7m"+dbreturn[0]+"\033[0m; Capa = \033[7m"+dbreturn[1]+
+                   "\033[0m; Type = \033[7m"+ResultType+"\033[0m")
+    # 循迹&扔垃圾
 cursor.close()
 con.close()
