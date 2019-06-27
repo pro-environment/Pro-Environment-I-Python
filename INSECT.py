@@ -44,6 +44,7 @@ conf_table = conf.get("MySQL", "table")
 print_info("Value of MySQL-table = "+conf_table)
 print_info("************* END *************")
 
+
 # 先输入个密码再说好不好？
 print("")
 passwd = input("Insect Password >>")

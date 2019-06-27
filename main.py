@@ -93,6 +93,7 @@ print_info("MySQL Server has been connected.")
 while whilecontinue < 1:
     barcode = input("Type EAN-13 Code > \033[7m ")
     print("\033[0m")
+
     # 执行一个SQL语句
     sql = "SELECT name,capa,type FROM test WHERE code='" + barcode + "';"
     cursor.execute(sql)
@@ -123,5 +124,7 @@ while whilecontinue < 1:
         print_info("Bar Code = \033[7m"+barcode+"\033[0m; Name = \033[7m"+dbreturn[0]+"\033[0m; Capa = \033[7m"+dbreturn[1]+
                    "\033[0m; Type = \033[7m"+ResultType+"\033[0m")
     # 循迹&扔垃圾
+
+
 cursor.close()
 con.close()
