@@ -95,7 +95,7 @@ while whilecontinue < 1:
     print("\033[0m")
 
     # 执行一个SQL语句
-    sql = "SELECT name,capa,type FROM test WHERE code='" + barcode + "';"
+    sql = "SELECT name,capa,type FROM test WHERE code='"+barcode+"';"
     cursor.execute(sql)
     print_info("Querying...")
 
