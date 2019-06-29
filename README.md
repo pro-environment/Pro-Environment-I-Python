@@ -1,4 +1,5 @@
 # Pro-Environment I
+![Python 3](https://img.shields.io/badge/Python-3-blue.svg) ![Raspberry Pi 3B+ Tested](https://img.shields.io/badge/RaspBerry%20Pi-3B%2B-critical.svg)
 ## 基于Arduino+树莓派的**可回收垃圾的再分类**
 ## 一、项目背景
 2019年1月31日，上海市十五届人大二次会议表决通过了《上海市生活垃圾管理条例》。该条例将于2019年7月1日起施行。体现了上海市为“海纳百川”、“追求卓越”的城市精神，并反映出全国各地对环境保护和社会治理领域的地方立法力度不断加强。统计显示，2018年上海全市每日生活垃圾清运量接近2.6万吨，年均生活垃圾产生量超过900万吨，给资源环境和经济社会可持续发展带来较大压力。
