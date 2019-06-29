@@ -55,10 +55,12 @@ cursor = db.cursor()
 # 手动输入一堆东西，以后改自动读串口
 inputcode = input("Code >>")
 inputname = input("Name >>")
+inputcapa = input("Capa >>")
 inputtype = input("Type >>")
 
 # SQL 插入语句
-sql = "INSERT INTO "+conf_table+" (code, name, type) VALUES ('"+inputcode+"', '"+inputname+"', '"+inputtype+"');"
+sql = "INSERT INTO "+conf_table+" (code, name,capa , type) VALUES ('"+inputcode+"', '"+inputname+"', '"+inputcapa+"', '"\
+      +inputtype+"');"
 # 打印一下语句方便查BUG
 print_info("Your SQL sentence is: "+sql)
 # 执行sql语句
