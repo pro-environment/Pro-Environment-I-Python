@@ -79,7 +79,7 @@ conf_baudRatestr = conf.get("Arduino", "baudRate")
 print_info("Value of Arduino-baudRate = "+conf_baudRatestr+"  \033[7m(Require type: int)\033[0m")
 print_info("************* END *************")
 
-# ser = serial.Serial(conf_COM, conf_baudRate, timeout=0.5)
+ser = serial.Serial(conf_COM, conf_baudRate, timeout=0.5)
 print_info("Arduino Serial Settings:")
 print_info("COM = \033[7m"+conf_COM+"\033[0m; BaudRate = \033[7m"+conf_baudRatestr+
            "\033[0m; Timeout = \033[7m0.5\033[0m")
@@ -94,6 +94,8 @@ while whilecontinue < 1:
     barcode = input("Type EAN-13 Code > \033[7m ")
     print("\033[0m")
 
+    if barcode == "ZXhpdCgp":
+        exit("QR code Exit")
     # 执行一个SQL语句
     sql = "SELECT name,capa,type FROM test WHERE code='"+barcode+"';"
     cursor.execute(sql)
@@ -109,22 +111,23 @@ while whilecontinue < 1:
         print("")
         if dbreturn[2] == "T":
             ResultType = "TEST"
-            send2arduino = 0
+            send2arduino = b"t"
         elif dbreturn[2] == "A":
             ResultType = "Plastic"
-            send2arduino = 1
+            send2arduino = b"a"
         elif dbreturn[2] == "B":
             ResultType = "Papery"
-            send2arduino = 2
+            send2arduino = b"b"
         elif dbreturn[2] == "C":
             ResultType = "Metallic"
-            send2arduino = 3
+            send2arduino = b"c"
         elif dbreturn[0] == "":
             print_info("\033[7mError: Data not found.")
         print_info("Bar Code = \033[7m"+barcode+"\033[0m; Name = \033[7m"+dbreturn[0]+"\033[0m; Capa = \033[7m"+dbreturn[1]+
                    "\033[0m; Type = \033[7m"+ResultType+"\033[0m")
     # 循迹&扔垃圾
-
+    ser.write(send2arduino)
+    print_info("Bytes sent complete!")
 
 cursor.close()
 con.close()
