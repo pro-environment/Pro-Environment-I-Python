@@ -11,8 +11,15 @@ def print_info(info):
     print("[" + time.strftime("%H:%M:%S", time.localtime()) + " INFO] " + info+"\033[0m")
 
 
+def print_warn(warn):
+    print("\033[31m[" + time.strftime("%H:%M:%S", time.localtime()) + " WARN] " + warn+"\033[0m")
+
+
+def print_running(info):
+    print("\033[4m[" + time.strftime("%H:%M:%S", time.localtime()) + " RUN] " + info+"\033[0m")
+
+
 print_info("Pro Environment Group © 2019")
-whilecontinue = 0
 
 # 读取配置文件
 print("")
@@ -79,27 +86,33 @@ conf_baudRatestr = conf.get("Arduino", "baudRate")
 print_info("Value of Arduino-baudRate = "+conf_baudRatestr+"  \033[7m(Require type: int)\033[0m")
 print_info("************* END *************")
 
-ser = serial.Serial(conf_COM, conf_baudRate, timeout=0.5)
-print_info("Arduino Serial Settings:")
-print_info("COM = \033[7m"+conf_COM+"\033[0m; BaudRate = \033[7m"+conf_baudRatestr+
-           "\033[0m; Timeout = \033[7m0.5\033[0m")
+try:
+    ser = serial.Serial(conf_COM, conf_baudRate, timeout=0.5)
+    print_info("Arduino Serial Settings:")
+    print_info("COM = \033[7m"+conf_COM+"\033[0m; BaudRate = \033[7m"+conf_baudRatestr+
+               "\033[0m; Timeout = \033[7m0.5\033[0m")
+except serial.serialutil.SerialException:
+    print_warn("Serial ["+conf_COM+"] not found!")
+    enable_arduino = False
 
 # 查询远程MySQL数据库
+print()
 # 创建一个连接对象，再使用创建游标
+print_running("Connecting to ["+conf_host+":"+str(conf_port)+"] ...")
 con = pymysql.connect(host=conf_host, port=conf_port, user=conf_user, passwd=conf_passwd,
                       db=conf_db)
 cursor = con.cursor()
-print_info("MySQL Server has been connected.")
-while whilecontinue < 1:
-    barcode = input("Type EAN-13 Code > \033[7m ")
-    print("\033[0m")
+print_info("MySQL Server has been connected!")
+while True:
+    barcode = input("Type EAN-13 Code >  ")
+    print("\033[0m", end="")
 
     if barcode == "ZXhpdCgp":
         exit("QR code Exit")
     # 执行一个SQL语句
-    sql = "SELECT name,capa,type FROM test WHERE code='"+barcode+"';"
+    sql = "SELECT name,capa,type FROM "+conf_table+" WHERE code='"+barcode+"';"
     cursor.execute(sql)
-    print_info("Querying...")
+    print_running("Querying...")
 
     # 从游标中取出所有记录放到一个序列中并关闭游标
     result = cursor.fetchall()
@@ -107,7 +120,7 @@ while whilecontinue < 1:
 
     for dbreturn in result:
         # 注意int类型需要使用str函数转义
-        print_info("Original Type = \033[7m"+dbreturn[1])
+        # print_info("Original Type = \033[7m"+dbreturn[1])
         print("")
         if dbreturn[2] == "T":
             ResultType = "TEST"
@@ -121,13 +134,16 @@ while whilecontinue < 1:
         elif dbreturn[2] == "C":
             ResultType = "Metallic"
             send2arduino = b"c"
-        elif dbreturn[0] == "":
-            print_info("\033[7mError: Data not found.")
+        else:
+            print_warn("Error: Type data not found.")
         print_info("Bar Code = \033[7m"+barcode+"\033[0m; Name = \033[7m"+dbreturn[0]+"\033[0m; Capa = \033[7m"+dbreturn[1]+
                    "\033[0m; Type = \033[7m"+ResultType+"\033[0m")
     # 循迹&扔垃圾
-    ser.write(send2arduino)
-    print_info("Bytes sent complete!")
+    if enable_arduino == True:
+        ser.write(send2arduino)
+        print_info("Bytes sent complete!")
+    else:
+        print_warn("Skipped send to Arduino!")
 
 cursor.close()
 con.close()
